@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class ChallengerApplication implements CommandLineRunner {
-
     @Autowired
     private RepositoryLibro repositoryLibro;
     @Autowired

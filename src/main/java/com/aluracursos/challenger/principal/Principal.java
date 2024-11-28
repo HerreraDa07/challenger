@@ -6,7 +6,11 @@ import com.aluracursos.challenger.repository.RepositoryLibro;
 import com.aluracursos.challenger.service.ConsumirApi;
 import com.aluracursos.challenger.service.ConversorDatos;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Principal {
@@ -29,41 +33,46 @@ public class Principal {
     private void menu() {
         int opcion = -1;
         while (opcion != 0) {
-            System.out.println("""
-                    ***** LiterAlura *****
-                    Digite una opción numérica
-                    1. Hacer una búsqueda por el título del libro
-                    2. Historial de libros buscados
-                    3. Historial de autores registrados
-                    4. Historial de autores vivos en un determinado año
-                    5. Historial de libros organizado por idioma
-                    
-                    0. Para finalizar el programa.
-                    """);
-            opcion = scanner.nextInt();
-            scanner.nextLine();
-            switch (opcion) {
-                case 0:
-                    System.out.println("El programa va a finalizar.");
-                    break;
-                case 1:
-                    buscar();
-                    break;
-                case 2:
-                    historial();
-                    break;
-                case 3:
-                    autores();
-                    break;
-                case 4:
-                    fecha();
-                    break;
-                case 5:
-                    idioma();
-                    break;
-                default:
-                    System.out.println("Ingreso una opción no válida.");
-                    break;
+            try {
+                System.out.println("""
+                        ***** LiterAlura *****
+                        Digite una opción numérica
+                        1. Hacer una búsqueda por el título del libro
+                        2. Historial de libros buscados
+                        3. Historial de autores registrados
+                        4. Historial de autores vivos en un determinado año
+                        5. Historial de libros organizado por idioma
+                        
+                        0. Para finalizar el programa.
+                        """);
+                opcion = scanner.nextInt();
+                scanner.nextLine();
+                switch (opcion) {
+                    case 0:
+                        System.out.println("El programa va a finalizar.");
+                        break;
+                    case 1:
+                        buscar();
+                        break;
+                    case 2:
+                        historial();
+                        break;
+                    case 3:
+                        autor();
+                        break;
+                    case 4:
+                        fecha();
+                        break;
+                    case 5:
+                        idioma();
+                        break;
+                    default:
+                        System.out.println("Ingreso una opción no válida.");
+                        break;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Debe ingresar un número. Por favor, intentelo de nuevo.");
+                scanner.nextLine();
             }
         }
     }
@@ -71,31 +80,36 @@ public class Principal {
     private void buscar() {
         System.out.println("Digite el nombre del libro que desea buscar.");
         String busqueda = scanner.nextLine();
+        try {
+            var json = consumirApi.consumoApi(URL + URLEncoder.encode(busqueda, StandardCharsets.UTF_8));
+            var datos = conversorDatos.obtenerDatosI(json, Datos.class);
 
-        var json = consumirApi.consumoApi(URL + busqueda.replace(" ", "%20"));
-        var datos = conversorDatos.obtenerDatosI(json, Datos.class);
+            DatosLibro datosLibro = datos.datosLibros().get(0);
+            DatosAutor datosAutor = datosLibro.autor().get(0);
 
-        DatosLibro datosLibro = datos.datosLibros().get(0);
-        String creador = datosLibro.autores().stream()
-                .map(DatosAutor::nombre)
-                .findFirst()
-                .orElse("Autor desconocido");
+            Libro libro = new Libro(datosAutor.nombre(), datosLibro);
+            Autor autor = new Autor(libro.getNombre(), datosAutor);
 
-        Autor autor = repositoryAutor.findByNombre(creador)
-                .orElseGet(() -> {
-                    Autor nuevoAutor = new Autor();
-                    nuevoAutor.setNombre(creador);
-                    nuevoAutor.setFechaDeNacimiento(datosLibro.autores().get(0).fechaDeNacimiento());
-                    nuevoAutor.setFechaDeFallecimiento(datosLibro.autores().get(0).fechaDeFallecimiento());
-                    nuevoAutor.setLibro(datosLibro.nombre());
-                    return repositoryAutor.save(nuevoAutor);
-                });
+            System.out.println(libro);
 
-        Libro libro = new Libro(creador, datosLibro);
-        libro.setAutor(autor);
-        repositoryLibro.save(libro);
-
-
+            Optional<Libro> libroOptional = repositoryLibro.findByNombre(libro.getNombre());
+            if (libroOptional.isPresent()) {
+                System.out.println("Ya existe este libro en la base de datos.");
+            } else {
+                repositoryLibro.save(libro);
+                if (repositoryAutor.existsByNombre(autor.getNombre())) {
+                    Optional<Autor> autorOptional = repositoryAutor.findByNombre(autor.getNombre());
+                    if (autorOptional.isPresent()) {
+                        autorOptional.get().getLibros().add(libro.getNombre());
+                        repositoryAutor.save(autorOptional.get());
+                    }
+                } else {
+                    repositoryAutor.save(autor);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Libro no encontrado");
+        }
     }
 
     private void historial() {
@@ -104,17 +118,17 @@ public class Principal {
         System.out.println(libros);
     }
 
-    private void autores() {
-        System.out.println("Historial de autores de los libros buscados recientemente.");
-        List<Autor> autores = repositoryAutor.findAll();
-        System.out.println(autores);
+    private void autor() {
+        System.out.println("Historial de autor de los libros buscados recientemente.");
+        List<Autor> autor = repositoryAutor.findAll();
+        System.out.println(autor);
     }
 
     private void fecha() {
-        System.out.println("Para ver el historial de autores vivos en determinado año, digite el año que desea buscar.");
+        System.out.println("Para ver el historial de autor vivos en determinado año, digite el año que desea buscar.");
         int fecha = scanner.nextInt();
-        List<Autor> autores = repositoryAutor.porFecha(fecha);
-        System.out.println(autores);
+        List<Autor> autor = repositoryAutor.porFecha(fecha);
+        System.out.println(autor);
     }
 
     private void idioma() {

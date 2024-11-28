@@ -2,6 +2,7 @@ package com.aluracursos.challenger.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -10,22 +11,19 @@ public class Autor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
     private String nombre;
     private Integer fechaDeNacimiento;
     private Integer fechaDeFallecimiento;
-    private String libro;
-    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Libro> libros;
+    private List<String> libros = new ArrayList<>();
 
     public Autor() {
     }
 
     public Autor(String libro, DatosAutor datosAutor) {
+        this.libros.add(libro);
         this.nombre = datosAutor.nombre();
         this.fechaDeNacimiento = datosAutor.fechaDeNacimiento();
         this.fechaDeFallecimiento = datosAutor.fechaDeFallecimiento();
-        this.libro = libro;
     }
 
     public Long getId() {
@@ -60,20 +58,11 @@ public class Autor {
         this.fechaDeFallecimiento = fechaDeFallecimiento;
     }
 
-    public String getLibro() {
-        return libro;
-    }
-
-    public void setLibro(String libro) {
-        this.libro = libro;
-    }
-
-    public List<Libro> getLibros() {
+    public List<String> getLibros() {
         return libros;
     }
 
-    public void setLibros(List<Libro> libros) {
-        libros.forEach(l -> l.setAutor(this));
+    public void setLibros(List<String> libros) {
         this.libros = libros;
     }
 
@@ -81,6 +70,7 @@ public class Autor {
     public String toString() {
         return "\n" + "Nombre: " + getNombre() + "\n" +
                 "Fecha de nacimiento: " + getFechaDeNacimiento() + "\n" +
-                "Fecha de fallecimiento: " + getFechaDeFallecimiento() + "\n";
+                "Fecha de fallecimiento: " + getFechaDeFallecimiento() + "\n" +
+                "Libros: " + getLibros() + "\n";
     }
 }

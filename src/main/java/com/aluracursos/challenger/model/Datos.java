@@ -9,4 +9,8 @@ import java.util.List;
 public record Datos(
         @JsonAlias("results")
         List<DatosLibro> datosLibros) {
+    @Override
+    public String toString() {
+        return "\n" + "Resultados: " + datosLibros + "\n";
+    }
 }

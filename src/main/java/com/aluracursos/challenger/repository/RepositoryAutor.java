@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RepositoryAutor extends JpaRepository<Autor, Long> {
-    Optional<Autor> findByNombre(String creador);
-
     @Query("SELECT a FROM Autor a WHERE a.fechaDeNacimiento <= :fecha AND a.fechaDeFallecimiento >= :fecha")
     List<Autor> porFecha(int fecha);
+
+    boolean existsByNombre(String nombre);
+
+    Optional<Autor> findByNombre(String nombre);
 }

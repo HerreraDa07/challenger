@@ -8,23 +8,19 @@ public class Libro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
-    private String creador;
-    private Double descargas;
-    private String idioma;
+    private String autor;
     private String nombre;
-    @ManyToOne
-    @JoinColumn(name = "autor_id")
-    private Autor autor;
+    private String idioma;
+    private Double descargas;
 
     public Libro() {
     }
 
-    public Libro(String creador, DatosLibro datosLibro) {
-        this.creador = creador;
-        this.descargas = datosLibro.descargas();
-        this.idioma = datosLibro.idioma().get(0);
+    public Libro(String autor, DatosLibro datosLibro) {
+        this.autor = autor;
         this.nombre = datosLibro.nombre();
+        this.idioma = datosLibro.idioma().get(0);
+        this.descargas = datosLibro.descargas();
     }
 
     public Long getId() {
@@ -35,28 +31,12 @@ public class Libro {
         this.id = id;
     }
 
-    public Double getDescargas() {
-        return descargas;
+    public String getAutor() {
+        return autor;
     }
 
-    public void setDescargas(Double descargas) {
-        this.descargas = descargas;
-    }
-
-    public String getCreador() {
-        return creador;
-    }
-
-    public void setCreador(String creador) {
-        this.creador = creador;
-    }
-
-    public String getIdioma() {
-        return idioma;
-    }
-
-    public void setIdioma(String idioma) {
-        this.idioma = idioma;
+    public void setAutor(String autor) {
+        this.autor = autor;
     }
 
     public String getNombre() {
@@ -67,18 +47,26 @@ public class Libro {
         this.nombre = nombre;
     }
 
-    public Autor getAutor() {
-        return autor;
+    public String getIdioma() {
+        return idioma;
     }
 
-    public void setAutor(Autor autor) {
-        this.autor = autor;
+    public void setIdioma(String idioma) {
+        this.idioma = idioma;
+    }
+
+    public Double getDescargas() {
+        return descargas;
+    }
+
+    public void setDescargas(Double descargas) {
+        this.descargas = descargas;
     }
 
     @Override
     public String toString() {
-        return "\n" + "Titulo: " + getNombre() + "\n" +
-                "Autor: " + getCreador() + "\n" +
+        return "\n" + "Autor: " + getAutor() + "\n" +
+                "Titulo: " + getNombre() + "\n" +
                 "Idioma: " + getIdioma() + "\n" +
                 "Número de descargas: " + getDescargas() + "\n";
     }

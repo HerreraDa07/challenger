@@ -9,7 +9,7 @@ public class ConversorDatos implements IConversorDatos {
     @Override
     public <T> T obtenerDatosI(String datos, Class<T> clase) {
         try {
-            return objectMapper.readValue(datos.toString(), clase);
+            return objectMapper.readValue(datos, clase);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
