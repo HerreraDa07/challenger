@@ -8,10 +8,8 @@ import com.aluracursos.challenger.service.ConversorDatos;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Principal {
     private ConsumirApi consumirApi = new ConsumirApi();
@@ -42,6 +40,9 @@ public class Principal {
                         3. Historial de autores registrados
                         4. Historial de autores vivos en un determinado año
                         5. Historial de libros organizado por idioma
+                        6. Top 10 libros más descargados
+                        7. Buscar autores por nombre
+                        8. Estadísticas de libros registrados
                         
                         0. Para finalizar el programa.
                         """);
@@ -65,6 +66,15 @@ public class Principal {
                         break;
                     case 5:
                         idioma();
+                        break;
+                    case 6:
+                        top10();
+                        break;
+                    case 7:
+                        busquedaAutor();
+                        break;
+                    case 8:
+                        estadisticas();
                         break;
                     default:
                         System.out.println("Ingreso una opción no válida.");
@@ -115,20 +125,32 @@ public class Principal {
     private void historial() {
         System.out.println("Historial de los libros buscados recientemente.");
         List<Libro> libros = repositoryLibro.findAll();
-        System.out.println(libros);
+        if (!libros.isEmpty()) {
+            System.out.println(libros);
+        } else {
+            System.out.println("Aún no ha registrado ningún libro.");
+        }
     }
 
     private void autor() {
         System.out.println("Historial de autor de los libros buscados recientemente.");
         List<Autor> autor = repositoryAutor.findAll();
-        System.out.println(autor);
+        if (!autor.isEmpty()) {
+            System.out.println(autor);
+        } else {
+            System.out.println("Aún no hay un registro de autores.");
+        }
     }
 
     private void fecha() {
         System.out.println("Para ver el historial de autor vivos en determinado año, digite el año que desea buscar.");
         int fecha = scanner.nextInt();
         List<Autor> autor = repositoryAutor.porFecha(fecha);
-        System.out.println(autor);
+        if (!autor.isEmpty()) {
+            System.out.println(autor);
+        } else {
+            System.out.println("No hay autores registrados vivos en ese año.");
+        }
     }
 
     private void idioma() {
@@ -177,5 +199,38 @@ public class Principal {
 
     private List<Libro> idiomas(String idioma) {
         return repositoryLibro.findByIdioma(idioma);
+    }
+
+    private void top10() {
+        List<Libro> libros = repositoryLibro.top10();
+        if (!libros.isEmpty()) {
+            System.out.println(libros);
+        } else {
+            System.out.println("Aún no se han registrado libros.");
+        }
+    }
+
+    private void busquedaAutor() {
+        System.out.println("Digite el nombre del autor que desea buscar");
+        String busqueda = scanner.nextLine();
+        Optional<Autor> autor = repositoryAutor.findAll().stream()
+                .filter(a -> a.getNombre().toLowerCase().contains(busqueda.toLowerCase()))
+                .findFirst();
+        if (autor.isPresent()) {
+            System.out.println(autor.get());
+        } else {
+            System.out.println("No existe ese autor");
+        }
+    }
+
+    private void estadisticas() {
+        List<Libro> libros = repositoryLibro.findAll();
+        DoubleSummaryStatistics est = libros.stream()
+                .filter(l -> l.getDescargas() > 0)
+                .collect(Collectors.summarizingDouble(Libro::getDescargas));
+        System.out.println("\nEl numero maximo de descargas de un libro es: " + est.getMax() +
+                "\nEl valor minimo de descargas de un libro: " + est.getMin() +
+                "\nLa suma de todas las descargas de los libros es de: " + est.getSum() +
+                "\nNúmero total de libros registrados: " + est.getCount() + "\n");
     }
 }
