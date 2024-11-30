@@ -45,6 +45,7 @@ public class Principal {
                         8. Estadísticas de libros registrados
                         
                         0. Para finalizar el programa.
+                        **Elige una opción para continuar**
                         """);
                 opcion = scanner.nextInt();
                 scanner.nextLine();
