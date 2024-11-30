@@ -25,6 +25,7 @@
 a. Se le presenta al usuario el siguiente menú:
 
 ***** **LiterAlura** *****
+
 Digite una opción numérica
 1. Hacer una búsqueda por el título del libro
 2. Historial de libros buscados
