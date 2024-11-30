@@ -37,6 +37,7 @@ Digite una opción numérica
 8. Estadísticas de libros registrados
 
 0. Para finalizar el programa.
+   
    **Elige una opción para continuar**
 
 b. El usuario puede escoger cualquiera de las opciones disponibles ingresando el número (0-8).
