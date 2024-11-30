@@ -45,4 +45,6 @@ c. Solamente la primera opción hace uso de la API.
 d. Las opciones 2 al 8 hacen uso de los datos registrados en la base de datos.
 
 ### Screenshot
-![Captura de pantalla del programa](\src\main\resources\Captura.PNG).
+![Captura de pantalla del programa](\src\images\Captura.PNG).
+![Captura de pantalla del programa](\src\images\Captura2.PNG).
+![Captura de pantalla del programa](\src\images\Captura3.PNG).
