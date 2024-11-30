@@ -10,7 +10,7 @@
 - *Este proyecto fue hecho en IntelliJ IDEA con el lenguaje de programación de Java e implementa la API gutendex (https://gutendex.com/books/). Hace parte de un desafío planteado en el curso de "Practicando Spring boot" de #AluraLatam y #oraclenexteducation*
 
 ### Funcionalidad
-- Este aplicativo sirve para hacer consultas sobre libros desde la API "gutendex" y guardarlas en una base de datos. La aplicación cuenta con las siguientes opciones:
+- Este aplicativo de consola sirve para hacer consultas sobre libros desde la API "gutendex" y guardarlas en una base de datos. La aplicación cuenta con las siguientes opciones:
 
 1. Hacer una búsqueda por el título del libro
 2. Historial de libros buscados
@@ -43,8 +43,3 @@ b. El usuario puede escoger cualquiera de las opciones disponibles ingresando el
 c. Solamente la primera opción hace uso de la API.
 
 d. Las opciones 2 al 8 hacen uso de los datos registrados en la base de datos.
-
-### Screenshot
-![Captura de pantalla del programa](src\images\Captura.PNG).
-![Captura de pantalla del programa](src\images\Captura2.PNG).
-![Captura de pantalla del programa](src\images\Captura3.PNG).
